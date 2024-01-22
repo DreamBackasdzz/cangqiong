@@ -27,6 +27,13 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     @Override
+    public void openOrStop(Integer statue, Long id) {
+        //update employee set statue ? where id = ?
+        Employee emp = Employee.builder().status(statue).id(id).build();
+        employeeMapper.update(emp);
+    }
+
+    @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
         Page<Employee> page= employeeMapper.pageQuery(employeePageQueryDTO);
