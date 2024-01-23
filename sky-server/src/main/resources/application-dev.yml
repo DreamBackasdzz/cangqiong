@@ -6,3 +6,8 @@ sky:
     database: sky_take_out
     username: root
     password: wangrongji020303
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: LTAI5tAzais54YTDukVCiWTV
+    access-key-secret: ro5rjzYDlnTSfttZXtriLC9W1GcH2I
+    bucket-name: java-learn-t

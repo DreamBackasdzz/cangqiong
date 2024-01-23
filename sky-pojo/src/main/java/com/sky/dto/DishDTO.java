@@ -1,5 +1,6 @@
 package com.sky.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sky.entity.DishFlavor;
 import lombok.Data;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ public class DishDTO implements Serializable {
 
     private Long id;
     //菜品名称
+    @JsonProperty
     private String name;
     //菜品分类id
     private Long categoryId;
