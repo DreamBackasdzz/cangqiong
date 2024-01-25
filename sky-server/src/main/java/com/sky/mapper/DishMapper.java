@@ -32,4 +32,8 @@ public interface DishMapper {
     List<Dish> getByIds(List<Long> ids);
 
     void deleteById(List<Long> ids);
+
+    void update(Dish dish);
+
+    List<Dish> list(Dish dish);
 }

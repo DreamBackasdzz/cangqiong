@@ -11,3 +11,10 @@ sky:
     access-key-id: LTAI5tAzais54YTDukVCiWTV
     access-key-secret: ro5rjzYDlnTSfttZXtriLC9W1GcH2I
     bucket-name: java-learn-t
+  redis:
+    port: 6379
+    host: localhost
+    database: 10
+  wechat:
+    appid: wxd577d1941379b3be
+    secret: 0e8d79522d51072da6cd925ad5fd9581
