@@ -1,13 +1,17 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.util.Internal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -92,6 +97,76 @@ public class ReportServiceImpl implements ReportService {
                 .dateList(StringUtils.join(dateList,","))
                 .newUserList(StringUtils.join(newUserList,","))
                 .totalUserList(StringUtils.join(totalUserList,","))
+                .build();
+    }
+
+    @Override
+    public OrderReportVO ordersStatistics(LocalDate begin, LocalDate end) {
+        List<LocalDate> dateList = new ArrayList<>();
+        dateList.add(begin);
+        while(!begin.equals(end)){
+            begin = begin.plusDays(1);
+            dateList.add(begin);
+        }
+        List<Integer> orderCountList = new ArrayList<>();
+        List<Integer> validOrderCountList = new ArrayList<>();
+        //封装每日有效订单数列表validOrderCountList
+        for (LocalDate date : dateList) {
+            LocalDateTime localBegin = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime localEnd = LocalDateTime.of(date, LocalTime.MIN);
+            //封装每日订单数列表orderCountList
+            //select count(id) from orders where order_time >= begin and order_time <= end
+            Map map = new HashMap();
+            map.put("begin",localBegin);
+            map.put("end",localEnd);
+            Integer dailyOrderCount = orderMapper.getCountByMap(map);
+            orderCountList.add(dailyOrderCount);
+            map.put("status",Orders.COMPLETED);
+            //select count(id) from orders where order_time >= begin and order_time <= end and status = 5
+            Integer dailyValidOrderCount = orderMapper.getCountByMap(map);
+            validOrderCountList.add(dailyValidOrderCount);
+        }
+        //订单总数totalOrderCount
+//        Integer totalOrderCount=0;
+//        for (Integer i : orderCountList) {
+//            totalOrderCount = i +totalOrderCount;
+//        }
+        Integer totalOrderCount = orderCountList.stream().reduce(Integer::sum).get();
+        //有效订单数validOrderCount
+//        Integer validOrderCount = 0;
+//        for (Integer i : validOrderCountList) {
+//            validOrderCount = i + validOrderCount;
+//        }
+        Integer validOrderCount = validOrderCountList.stream().reduce(Integer::sum).get();
+        //订单完成率orderCompletionRate
+        Double orderCompletionRate = 0.0;
+        try {
+            orderCompletionRate = (validOrderCount/totalOrderCount) * 100.0;
+        } catch (ArithmeticException e) {
+            orderCompletionRate = 0.0;
+        }
+        return OrderReportVO
+                .builder()
+                .dateList(StringUtils.join(dateList,","))
+                .orderCountList(StringUtils.join(orderCountList,","))
+                .validOrderCountList(StringUtils.join(validOrderCountList,","))
+                .totalOrderCount(totalOrderCount)
+                .validOrderCount(validOrderCount)
+                .orderCompletionRate(orderCompletionRate)
+                .build();
+    }
+
+    @Override
+    public SalesTop10ReportVO top10(LocalDate begin, LocalDate end) {
+        LocalDateTime localBegin = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime localEnd = LocalDateTime.of(end, LocalTime.MAX);
+        List<GoodsSalesDTO> gooodsSalesTop10 = orderMapper.getGooodsSalesTop10(localBegin, localEnd);
+        List<String> namelist = gooodsSalesTop10.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+        List<Integer> mnumberlist = gooodsSalesTop10.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList());
+        return SalesTop10ReportVO
+                .builder()
+                .nameList(StringUtils.join(namelist,","))
+                .numberList(StringUtils.join(mnumberlist,","))
                 .build();
     }
 }
