@@ -1,6 +1,8 @@
 package com.sky.mapper;
 
+import com.github.pagehelper.Page;
 import com.sky.dto.GoodsSalesDTO;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -30,4 +32,13 @@ public interface OrderMapper {
     Integer getCountByMap(Map map);
 
     List<GoodsSalesDTO> getGooodsSalesTop10(LocalDateTime begin, LocalDateTime end);
+
+    Page<Orders> getByCondition(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    @Select("select count(id) from orders where status = #{confirmed}")
+    Integer countStatistics(Integer confirmed);
+    @Select("select * from orders where id = #{id}")
+    Orders getById(Long id);
+
+    Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 }

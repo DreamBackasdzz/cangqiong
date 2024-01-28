@@ -86,4 +86,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         //若分数为大于1则分数减1
 
     }
+
+    @Override
+    public void clean() {
+        Long userId = BaseContext.getCurrentId();
+        shoppingCartMapper.deleteByUserId(userId);
+    }
 }
