@@ -8,8 +8,8 @@ sky:
     password: wangrongji020303
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: LTAI5tAzais54YTDukVCiWTV
-    access-key-secret: ro5rjzYDlnTSfttZXtriLC9W1GcH2I
+    access-key-id: 
+    access-key-secret: 
     bucket-name: java-learn-t
   redis:
     port: 6379
